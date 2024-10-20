@@ -1,21 +1,18 @@
 from fastapi import HTTPException
 import requests
+import os
+from dotenv import load_dotenv
 
-
-API_KEY = "b40ef805679af68d2262431e6af0789a"
-BASE_URL_NOW = "http://api.openweathermap.org/data/2.5/weather"
-BASE_URL_TODAY = "https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&exclude={part}&appid={API key}"
-BASE_URL_GEOLOCATION = "http://api.openweathermap.org/geo/1.0/direct"
-
-
+load_dotenv()
+API_KEY = os.getenv("API_KEY")
+BASE_URL_NOW = "https://api.weatherapi.com/v1/current.json"
+BASE_URL_TODAY = "https://api.weatherapi.com/v1/forecast.json"
 
 
 def get_weather_now(city: str):
     params = {
         "q": city,
-        "appid": API_KEY,
-        "units": "metric",
-        "lang": "ru"
+        "key": API_KEY,
     }
 
     response = requests.get(BASE_URL_NOW, params=params)
@@ -26,39 +23,35 @@ def get_weather_now(city: str):
         raise HTTPException(status_code=response.status_code, detail=f"City not found or API error: {response.text}")
 
 
-
-def get_weather_tomorrow(
-        city: str,
-        lat: str,
-        lon: str,
-
+def get_weather_today(
+        city: str
 ):
     params = {
-        "lat": lat,
-        "lon": lon,
-        "appid": API_KEY,
-        "units": "metric",
-        "lang": "ru"
+        "q": city,
+        "key": API_KEY,
     }
 
     response = requests.get(BASE_URL_TODAY, params=params)
 
     if response.status_code == 200:
-        return response.json
+        return response.json()
     else:
-        raise HTTPException(status_code=response.status_code, detail="Что-то пошло не так")
+        raise HTTPException(status_code=response.status_code, detail="В пизду такую езду")
 
 
-def get_city_coordinates(city_name: str):
+def get_weather_not_today(
+        city: str,
+        days: int
+):
     params = {
-        "q": city_name,
-        # "limit": 1,  # Нам достаточно одного результата
-        "appid": API_KEY
+        "q": city,
+        "key": API_KEY,
+        "days": days
     }
-    response = requests.get(BASE_URL_GEOLOCATION, params=params)
 
-    if response.status_code == 200 and response.json():
-        data = response.json()[0]
-        return data["lat"], data["lon"]
+    response = requests.get(BASE_URL_TODAY, params=params)
+
+    if response.status_code == 200:
+        return response.json()
     else:
-        raise HTTPException(status_code=404, detail="City not found")
+        raise HTTPException(status_code=response.status_code, detail="В пизду такую езду")
