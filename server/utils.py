@@ -36,7 +36,7 @@ def get_weather_today(
     if response.status_code == 200:
         return response.json()
     else:
-        raise HTTPException(status_code=response.status_code, detail="В пизду такую езду")
+        raise HTTPException(status_code=response.status_code, detail="WHY IS NOT WORKING????!!!")
 
 
 def get_weather_not_today(
@@ -54,4 +54,4 @@ def get_weather_not_today(
     if response.status_code == 200:
         return response.json()
     else:
-        raise HTTPException(status_code=response.status_code, detail="В пизду такую езду")
+        raise HTTPException(status_code=response.status_code, detail="WHY IS NOT WORKING????!!!")
