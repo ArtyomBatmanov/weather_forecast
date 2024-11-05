@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Прогноз погоды на 3 дня</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            margin: 0;
+        }
+        .header {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .daily-forecast {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .forecast-item {
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .forecast-day {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .forecast-details {
+            display: flex;
+            gap: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Заголовок страницы -->
+    <div class="header">Прогноз погоды на 3 дня</div>
+
+    <!-- Прогноз по дням -->
+    <div class="daily-forecast">
+        {% for day in forecast %}
+            <div class="forecast-item">
+                <div class="forecast-day">Дата: {{ day.day }}</div>
+                <div class="forecast-details">
+                    <span>Макс температура: {{ day.maxtemp_c }} °C</span>
+                    <span>Мин температура: {{ day.mintemp_c }} °C</span>
+                    <span>Средняя температура: {{ day.avgtemp_c }} °C</span>
+                    <span>Макс скорость ветра: {{ day.maxwind_kph }}</span>
+                    <span>Условия: {{ day.text }}</span>
+                    <span>Восход: {{ day.sunrise }}</span>
+                    <span>Закат: {{ day.sunset }}</span>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

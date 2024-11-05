@@ -42,13 +42,13 @@ async def weather_now(request: Request, city: str):
             "pressure": str(int(int(data["current"]["pressure_mb"]) * 0.75006)) + " мм рт.ст."
         }
 
-        return templates.TemplateResponse("templates/weather_now.html", {"request": request, "forecast": forecast})
+        return templates.TemplateResponse("templates/now.html", {"request": request, "forecast": forecast})
     except HTTPException as e:
         raise e
 
 
 @app.get("/api/weather/{city}/today")
-async def weather_today(city: str):
+async def weather_today(city: str, request: Request):
     """
     :param city:
     :return:
@@ -63,22 +63,22 @@ async def weather_today(city: str):
         hourly_forecast.append(date)
         for hour_data in data["forecast"]["forecastday"][0]["hour"]:
             forecast = {
-                "Местное время": hour_data["time"][-5:],
-                "°С": hour_data["temp_c"],
-                "Ощущается как": hour_data["feelslike_c"],
-                "Скорость ветра": f"{round(hour_data['wind_kph'] * 0.27778, 1)} м/с {hour_data['wind_dir']}",
-                "Осадки": hour_data["condition"]["text"],
-                "Давление": f"{int(hour_data['pressure_mb'] * 0.75006)} мм рт.ст."
+                "local_time": hour_data["time"][-5:],
+                "temperature": hour_data["temp_c"],
+                "feels_like": hour_data["feelslike_c"],
+                "wind_speed": f"{round(hour_data['wind_kph'] * 0.27778, 1)} м/с {hour_data['wind_dir']}",
+                "condition": hour_data["condition"]["text"],
+                "pressure": f"{int(hour_data['pressure_mb'] * 0.75006)} мм рт.ст."
             }
             hourly_forecast.append(forecast)
 
-        return hourly_forecast
+        return templates.TemplateResponse("templates/today.html", {"request": request, "forecast": hourly_forecast})
     except HTTPException as e:
         raise e
 
 
 @app.get("/api/weather/{city}/tomorrow")
-async def weather_tomorrow(city: str):
+async def weather_tomorrow(city: str, request: Request):
     """
     :param city:
     :return:
@@ -93,22 +93,22 @@ async def weather_tomorrow(city: str):
         hourly_forecast.append(date)
         for hour_data in data["forecast"]["forecastday"][1]["hour"]:
             forecast = {
-                "Местное время": hour_data["time"][-5:],
-                "°С": hour_data["temp_c"],
-                "Ощущается как": hour_data["feelslike_c"],
-                "Скорость ветра": f"{round(hour_data['wind_kph'] * 0.27778, 1)} м/с {hour_data['wind_dir']}",
-                "Осадки": hour_data["condition"]["text"],
-                "Давление": f"{int(hour_data['pressure_mb'] * 0.75006)} мм рт.ст."
+                "local_time": hour_data["time"][-5:],
+                "temperature": hour_data["temp_c"],
+                "feels_like": hour_data["feelslike_c"],
+                "wind_speed": f"{round(hour_data['wind_kph'] * 0.27778, 1)} м/с {hour_data['wind_dir']}",
+                "condition": hour_data["condition"]["text"],
+                "pressure": f"{int(hour_data['pressure_mb'] * 0.75006)} мм рт.ст."
             }
             hourly_forecast.append(forecast)
 
-        return hourly_forecast
+        return templates.TemplateResponse("templates/tomorrow.html", {"request": request, "forecast": hourly_forecast})
     except HTTPException as e:
         raise e
 
 
 @app.get("/api/weather/{city}/3-days/")
-async def weather_week(city: str):
+async def weather_week(city: str, request: Request):
     """
     :param city:
     :return:
@@ -120,19 +120,19 @@ async def weather_week(city: str):
         for day in data["forecast"]["forecastday"]:
             print(day["date"])
             forecast = {
-                "День": day["date"],
-                "Макс °С": day["day"]["maxtemp_c"],
-                "Мин °С": day["day"]["mintemp_c"],
-                "Средняя °С": day["day"]["avgtemp_c"],
-                "Макс скорость ветра": str(round(day["day"]["maxwind_kph"] * 0.27778, 1)) + " м/c",
-                "Описание": day["day"]["condition"]["text"],
-                "Восход": day["astro"]["sunrise"],
-                "Закат": day["astro"]["sunset"],
+                "day": day["date"],
+                "maxtemp_c": day["day"]["maxtemp_c"],
+                "mintemp_c": day["day"]["mintemp_c"],
+                "avgtemp_c °С": day["day"]["avgtemp_c"],
+                "maxwind_kph": str(round(day["day"]["maxwind_kph"] * 0.27778, 1)) + " м/c",
+                "text": day["day"]["condition"]["text"],
+                "sunrise": day["astro"]["sunrise"],
+                "sunset": day["astro"]["sunset"],
 
             }
             daily_forecast.append(forecast)
 
-        return daily_forecast
+        return templates.TemplateResponse("templates/3_days.html", {"request": request, "forecast": daily_forecast})
 
     except HTTPException as e:
         raise e

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Погода на завтра</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            margin: 0;
+        }
+        .header {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .forecast-date {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #555;
+        }
+        .hourly-forecast {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .forecast-item {
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .forecast-time {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .forecast-details {
+            display: flex;
+            gap: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Заголовок с названием города и датой -->
+    <div class="header">Прогноз погоды на завтра для {{ forecast[0] }}</div>
+    <div class="forecast-date">Дата: {{ forecast[1] }}</div>
+
+    <!-- Прогноз по часам -->
+    <div class="hourly-forecast">
+        {% for hour in forecast[2:] %}
+            <div class="forecast-item">
+                <div class="forecast-time">Время: {{ hour.local_time }}</div>
+                <div class="forecast-details">
+                    <span>Температура: {{ hour.temperature }} °C</span>
+                    <span>Ощущается как: {{ hour.feels_like }} °C</span>
+                    <span>Ветер: {{ hour.wind_speed }}</span>
+                    <span>Осадки: {{ hour.condition }}</span>
+                    <span>Давление: {{ hour.pressure }}</span>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
