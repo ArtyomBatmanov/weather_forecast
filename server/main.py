@@ -1,11 +1,28 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from utils import get_weather_now, get_weather_today, get_weather_not_today
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+import os
 
 app = FastAPI()
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # корневая директория проекта
+app.mount("/static/", StaticFiles(directory=os.path.join(BASE_DIR, "client")), name="static")
 
-@app.get("/weather/{city}/now")
-async def weather_now(city: str):
+templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "client/"))
+
+
+@app.get("/")
+async def root(request: Request):
+    """
+    Отобразить прогноз погоды для Москвы на базовой странице.
+    """
+    # city = "Москва"
+    return templates.TemplateResponse("index.html", {"request": request})
+
+
+@app.get("/api/weather/{city}/now")
+async def weather_now(request: Request, city: str):
     """
     :param city:
     :return:
@@ -15,22 +32,22 @@ async def weather_now(city: str):
         data = get_weather_now(city)
 
         forecast = {
-            "Название города": data["location"]["name"],
-            "Местное время": data["location"]["localtime"][-6:],
-            "°С": data["current"]["temp_c"],
-            "Ощущается как": data["current"]["feelslike_c"],
-            "Скорость ветра": str(round(int(data["current"]["wind_kph"]) * 0.27778, 1)) + " м/с " + data["current"][
+            "city_name": data["location"]["name"],
+            "local_time": data["location"]["localtime"][-6:],
+            "temperature": data["current"]["temp_c"],
+            "feels_like": data["current"]["feelslike_c"],
+            "wind_speed": str(round(int(data["current"]["wind_kph"]) * 0.27778, 1)) + " м/с " + data["current"][
                 "wind_dir"],
-            "Осадки": data["current"]["condition"]["text"],
-            "Давление": str(int(int(data["current"]["pressure_mb"]) * 0.75006)) + " мм рт.ст."
+            "condition": data["current"]["condition"]["text"],
+            "pressure": str(int(int(data["current"]["pressure_mb"]) * 0.75006)) + " мм рт.ст."
         }
 
-        return forecast
+        return templates.TemplateResponse("templates/weather_now.html", {"request": request, "forecast": forecast})
     except HTTPException as e:
         raise e
 
 
-@app.get("/weather/{city}/today")
+@app.get("/api/weather/{city}/today")
 async def weather_today(city: str):
     """
     :param city:
@@ -60,7 +77,7 @@ async def weather_today(city: str):
         raise e
 
 
-@app.get("/weather/{city}/tomorrow")
+@app.get("/api/weather/{city}/tomorrow")
 async def weather_tomorrow(city: str):
     """
     :param city:
@@ -90,12 +107,12 @@ async def weather_tomorrow(city: str):
         raise e
 
 
-@app.get("/weather/{city}/week")
+@app.get("/api/weather/{city}/3-days/")
 async def weather_week(city: str):
     """
     :param city:
     :return:
-    Получить прогноз погоды на неделю вперёд (на 2 дня вперёд)
+    Получить прогноз погоды на 3 дня
     """
     daily_forecast = []
     try:
@@ -121,7 +138,7 @@ async def weather_week(city: str):
         raise e
 
 
-@app.get("/weather/{city}/month")
+@app.get("/api/weather/{city}/month")
 async def weather_month(city: str):
     """
     Перестали отдавать по API данные с прогнозом более 2-х дней

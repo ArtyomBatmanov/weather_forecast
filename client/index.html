@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Прогноз погоды</title>
+    <style>
+        /* Стили — остаются прежними */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 20px;
+        }
+        .header {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .button-panel {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">Прогноз погоды</div>
+    <div class="button-panel">
+        <input type="text" id="city-input" placeholder="Введите город">
+        <button onclick="redirectToWeather()">Поиск</button>
+    </div>
+
+    <script>
+        function redirectToWeather() {
+            // Получаем значение из поля ввода
+            const city = document.getElementById("city-input").value.trim();
+
+            // Если город не введен, выходим из функции
+            if (!city) {
+                alert("Пожалуйста, введите город.");
+                return;
+            }
+
+            // Преобразуем город в нижний регистр и убираем лишние пробелы
+            const formattedCity = city.toLowerCase();
+
+            // Формируем URL для перенаправления
+            const url = `/api/weather/${formattedCity}/now`;
+
+            // Логируем URL для отладки (можно убрать позже)
+            console.log(`Redirecting to: ${url}`);
+
+            // Перенаправляем пользователя на сформированный URL
+            window.location.href = url;
+        }
+    </script>
+</body>
+</html>
